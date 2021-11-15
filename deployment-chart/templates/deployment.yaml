@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-service
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector: 
+    matchLabels:
+        app: demo-services
+  template:
+    metadata:
+      labels:
+        app: demo-services
+    spec:
+      containers:
+      - name: demo-service-1
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 8080
+          protocol: TCP

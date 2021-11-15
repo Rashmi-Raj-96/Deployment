@@ -1,0 +1,59 @@
+KT - UM2.0
+
+Event-Processor WorkFlow:
+ there are two things that we store device event(Events related to the device interaction over supported protocol - all 5 type of devices(LwM2m, CoaP, HTTP, NIDD ))  application event(events relate to api usages) now, we want to put it in elastic search and retrieve plus convert csv to sftp server
+two jobs - 1 hour(every) third job - 10 mins
+
+Log-stash (Logstash is a light-weight, open-source, server-side data processing pipeline that allows you to collect data from a variety of sources, transform it on the fly, and send it to your desired destination. It is most often used as a data pipeline for Elasticsearch, an open-source analytics and search engine.) daemon consumes the events from Kafka, encodes them from binary format to JSON strings, and then push into the ElasticSearch database.
+
+log-stash -> EleasticSearch Db -> kubernetes run the job (pull data using api calls) -> csv file created -> soft bank sever
+
+delet files from current location when transfeered
+and file aging is given to sb to upload for expiry/removal of files
+
+Issue : 
+no empty events file
+overwriting files
+
+*when any device and application event fails : 
+
+Events - Alarm and Monitoring
+there are then events monitoring for all the three jobs and we mentioning particular alarm codes
+device - 5 (910201,05)  
+application - 5 (05-10)
+csv - 4 (11-13)
+the same think is followed in testlink with how we replicated that and what are the solution
+ 
+Nidd - Simulator
+Simulator is to create device type then add device and then check the events such as read, observe, write,
+So to see if the device is succesfully onboarded we run the perf-simulator
+scef simulator to record the events of read/write etc
+we need to configure the properties of the device for the first time:
+things we need to change mostly is extrenal id is true/false
+the urls
+device_simulator : 
+
+(the purpose is to check the log of events, and dataflow, and a particular device)
+
+Um1.0
+Usage metrics (according to individuals how many deveices they are using and how much data they are consuming,  according to period) *it is deprecated
+4 api
+Um2.0
+Storage api deprecations :
+it was done to basically deprecate the storage apis from gateway and instance for japan only
+so to overcome the vast challenge we just made changes in cron expression of storageJob in helm values.yaml in japan instance
+impact : um_on_demand_storage_metrics, billing api
+In Billing Api, there weill be no storage data
+Cassandra db : record for storage was set to zero
+All the above will be in japan instance
+all the past records are still there but cant be fetched
+Japan is having their own (storage)cloud to store data
+
+docker run -d --name csv-to-sftp -e ZIP_FILE_LOCATION=sb  -e CSVFILES_LOCATION="c:\lmc" -e SFTP_USERNAME=sftpuser -e SFTP_HOSTNAME=sftp-test -e SFTP_PORT=22 -e SFTP_PATH=/home/sftpuser/sftppath -e SFTP_PRIVATEKEY=/root/.ssh/sftp.pem -e SFTP_KEYPASS=12345  -e FAULTMANAGEMENT_HOST=http://10.86.141.121 -e FAULTMANAGEMENT_PORT=8099 selidocker.lmera.ericsson.se/proj-dmdc-aas/event-processor/csv-to-sftp_image:2.4.1
+
+
+Question:
+what do we mean by multiple event created? more than 5000 record, seconf file gets generated
+still confused about this event?
+why we run third simulator ? whats its purpose?
+

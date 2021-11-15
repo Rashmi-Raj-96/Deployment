@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: node-affinity-demo
+  labels:
+    env: staging
+spec:
+  containers:
+    - name: node-affinity-demo
+      image: rash11/deployment-demo:latest
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: disktype #node will be selected with label disktype and value ssd
+            operator: In
+            values:
+            - ssd
